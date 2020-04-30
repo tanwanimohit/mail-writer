@@ -6,6 +6,7 @@ import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { Radio, RadioGroup, FormControlLabel, TextField } from '@material-ui/core';
+import { MailContext, IEmail } from '../../context/MailContext';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     instructions: {
       padding: theme.spacing(1),
-      
+
     },
   }),
 );
@@ -28,8 +29,6 @@ function getSteps() {
 }
 
 
-
-
 export default function HorizontalLabelPositionBelowStepper() {
   const [value, setValue] = React.useState('Regarding');
   const [textBox, setTextBox] = React.useState("");
@@ -37,13 +36,25 @@ export default function HorizontalLabelPositionBelowStepper() {
   const [activeStep, setActiveStep] = React.useState(0);
   const steps = getSteps();
 
+  const Mail: IEmail = React.useContext(MailContext)!;
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTextBox("");
     setValue((event.target as HTMLInputElement).value);
   };
 
   const handleNext = () => {
-    alert(value+" "+textBox);
+    if (activeStep === 0)
+      if (value !== "10")
+        Mail.setMail({
+          ...Mail.mail,
+          subject: value + " " + textBox
+        });
+      else
+        Mail.setMail({
+          ...Mail.mail,
+          subject: textBox
+        });
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
@@ -78,19 +89,74 @@ export default function HorizontalLabelPositionBelowStepper() {
                 activeStep === 0 &&
                 <div className="left">
                   <RadioGroup aria-label="subject" name="subject" value={value} onChange={handleChange}>
-                    <FormControlLabel value="Regarding" control={<Radio />} label={<FormControlLabel control={<Typography className={classes.instructions}> Regaring </Typography>} label={<TextField id='r1' placeholder='Information about...' variant='standard' autoComplete="off" onChange={(e)=>setTextBox(e.target.value)} disabled={value!=="Regarding" ?true :false} />} />} />
-                    <FormControlLabel value="Inquiry about" control={<Radio />} label={<FormControlLabel control={<Typography className={classes.instructions}> Inquiry about </Typography>} label={<TextField id='r1' placeholder='the subject' variant='standard' autoComplete="off" onChange={(e)=>setTextBox(e.target.value)} disabled={value!=="Inquiry about" ?true :false} />} />} />
-                    <FormControlLabel value="Need clearification about" control={<Radio />} label={<FormControlLabel control={<Typography className={classes.instructions}> Need clearification about </Typography>} label={<TextField id='r1' placeholder='the subject' autoComplete="off" onChange={(e)=>setTextBox(e.target.value)} variant='standard' disabled={value!=="Need clearification about" ?true :false} />} />} />
-                    <FormControlLabel value="Reminder for" control={<Radio />} label={<FormControlLabel control={<Typography className={classes.instructions}> Reminder for </Typography>} label={<TextField id='r1' placeholder='the subject' variant='standard' autoComplete="off" onChange={(e)=>setTextBox(e.target.value)} disabled={value!=="Reminder for" ?true :false} />} />} />
-                    <FormControlLabel value="Update on" control={<Radio />} label={<FormControlLabel control={<Typography className={classes.instructions}> Update on </Typography>} label={<TextField id='r1' placeholder='the metter' variant='standard' autoComplete="off" onChange={(e)=>setTextBox(e.target.value)} disabled={value!=="Update on" ?true :false} />} />} />
-                    <FormControlLabel value="Invitation for" control={<Radio />} label={<FormControlLabel control={<Typography className={classes.instructions}> Invitation for </Typography>} label={<TextField id='r1' placeholder='the subject' variant='standard' autoComplete="off" onChange={(e)=>setTextBox(e.target.value)} disabled={value!=="Invitation for" ?true :false} />} />} />
-                    <FormControlLabel value="Congratulations !" control={<Radio />} label={<FormControlLabel control={<Typography className={classes.instructions}> Congratulations ! </Typography>} label={<TextField id='r1' placeholder='the subject' variant='standard' autoComplete="off" onChange={(e)=>setTextBox(e.target.value)}disabled={value!=="Congratulations !" ?true :false} />} />} />
-                    <FormControlLabel value="Apologies for" control={<Radio />} label={<FormControlLabel control={<Typography className={classes.instructions}> Apologies for </Typography>} label={<TextField id='r1' placeholder='the subject' variant='standard' autoComplete="off" onChange={(e)=>setTextBox(e.target.value)} disabled={value!=="Apologies for" ?true :false} />} />} />
-                    <FormControlLabel value="10" control={<Radio />} label={<TextField id="r4"  onChange={(e)=>setTextBox(e.target.value)} placeholder="Write your own " autoComplete="off" variant="standard" disabled={value!=="10" ?true :false} />} />
+
+                    <FormControlLabel value="Regarding" control={<Radio />} label={<FormControlLabel
+                      control={<Typography className={classes.instructions}> Regaring </Typography>}
+                      label={<TextField id='r1' placeholder='Information about...'
+                        variant='standard' autoComplete="off"
+                        onChange={(e) => setTextBox(e.target.value)} disabled={value !== "Regarding" ? true : false}
+                        value={value === "Regarding" ? textBox : ""} />} />}
+                    />
+
+                    <FormControlLabel value="Inquiry about" control={<Radio />} label={<FormControlLabel
+                      control={<Typography className={classes.instructions}> Inquiry about </Typography>}
+                      label={<TextField id='r1' placeholder='the subject'
+                        variant='standard' autoComplete="off"
+                        onChange={(e) => setTextBox(e.target.value)} value={value === "Inquiry about" ? textBox : ""}
+                        disabled={value !== "Inquiry about" ? true : false} />} />}
+                    />
+
+                    <FormControlLabel value="Need clearification about" control={<Radio />} label={<FormControlLabel
+                      control={<Typography className={classes.instructions}> Need clearification about </Typography>}
+                      label={<TextField id='r1' placeholder='the subject' autoComplete="off"
+                        onChange={(e) => setTextBox(e.target.value)} value={value === "Need clearification about" ? textBox : ""}
+                        variant='standard'
+                        disabled={value !== "Need clearification about" ? true : false} />} />}
+                    />
+
+                    <FormControlLabel value="Reminder for" control={<Radio />} label={<FormControlLabel
+                      control={<Typography className={classes.instructions}> Reminder for </Typography>}
+                      label={<TextField id='r1' placeholder='the subject' variant='standard' autoComplete="off"
+                        onChange={(e) => setTextBox(e.target.value)} value={value === "Reminder for" ? textBox : ""}
+                        disabled={value !== "Reminder for" ? true : false} />} />}
+                    />
+
+                    <FormControlLabel value="Update on" control={<Radio />}
+                      label={<FormControlLabel control={<Typography className={classes.instructions}> Update on </Typography>}
+                        label={<TextField id='r1' placeholder='the metter' variant='standard' autoComplete="off" onChange={(e) =>
+                          setTextBox(e.target.value)} value={value === "Update on" ? textBox : ""} disabled={value !== "Update on" ? true : false} />} />}
+                    />
+
+                    <FormControlLabel value="Invitation for" control={<Radio />}
+                      label={<FormControlLabel control={<Typography className={classes.instructions}> Invitation for </Typography>}
+                        label={<TextField id='r1' placeholder='the subject' variant='standard' autoComplete="off"
+                          onChange={(e) => setTextBox(e.target.value)} value={value === "Invitation for" ? textBox : ""}
+                          disabled={value !== "Invitation for" ? true : false} />} />}
+                    />
+
+                    <FormControlLabel value="Congratulations !"
+                      control={<Radio />} label={<FormControlLabel control={<Typography className={classes.instructions}> Congratulations ! </Typography>}
+                        label={<TextField id='r1' placeholder='the subject' variant='standard' autoComplete="off" onChange={(e) => setTextBox(e.target.value)}
+                          value={value === "Congratulations !" ? textBox : ""}
+                          disabled={value !== "Congratulations !" ? true : false} />} />}
+                    />
+
+                    <FormControlLabel value="Apologies for"
+                      control={<Radio />} label={<FormControlLabel control={<Typography className={classes.instructions}> Apologies for </Typography>}
+                        label={<TextField id='r1' placeholder='the subject' variant='standard' autoComplete="off" onChange={(e) => setTextBox(e.target.value)}
+                          value={value === "Apologies for" ? textBox : ""} disabled={value !== "Apologies for" ? true : false} />} />}
+                    />
+
+                    <FormControlLabel value="10" control={<Radio />}
+                      label={<TextField id="r4" onChange={(e) => setTextBox(e.target.value)} placeholder="Write your own "
+                        autoComplete="off" variant="standard" value={value === "10  " ? textBox : ""}
+                        disabled={value !== "10" ? true : false} />}
+                    />
                   </RadioGroup>
                 </div>
               }
               <div className="right">
+
                 <Button
                   disabled={activeStep === 0}
                   onClick={handleBack}
